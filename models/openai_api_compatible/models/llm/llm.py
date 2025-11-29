@@ -1,5 +1,6 @@
 import re
 from contextlib import suppress
+from typing import List
 from typing import Mapping, Optional, Union, Generator
 
 from dify_plugin.entities.model import (
@@ -19,7 +20,6 @@ from dify_plugin.entities.model.message import (
     AssistantPromptMessage,
 )
 from dify_plugin.interfaces.model.openai_compatible.llm import OAICompatLargeLanguageModel
-from typing import List
 
 
 class OpenAILargeLanguageModel(OAICompatLargeLanguageModel):
@@ -27,7 +27,7 @@ class OpenAILargeLanguageModel(OAICompatLargeLanguageModel):
     _THINK_PATTERN = re.compile(r"^<think>.*?</think>\s*", re.DOTALL)
 
     def get_customizable_model_schema(
-        self, model: str, credentials: Mapping | dict
+            self, model: str, credentials: Mapping | dict
     ) -> AIModelEntity:
         entity = super().get_customizable_model_schema(model, credentials)
 
@@ -119,15 +119,15 @@ class OpenAILargeLanguageModel(OAICompatLargeLanguageModel):
                 p.content = new_content
 
     def _invoke(
-        self,
-        model: str,
-        credentials: dict,
-        prompt_messages: list[PromptMessage],
-        model_parameters: dict,
-        tools: Optional[list[PromptMessageTool]] = None,
-        stop: Optional[list[str]] = None,
-        stream: bool = True,
-        user: Optional[str] = None,
+            self,
+            model: str,
+            credentials: dict,
+            prompt_messages: list[PromptMessage],
+            model_parameters: dict,
+            tools: Optional[list[PromptMessageTool]] = None,
+            stop: Optional[list[str]] = None,
+            stream: bool = True,
+            user: Optional[str] = None,
     ) -> Union[LLMResult, Generator]:
         # Compatibility adapter for Dify's 'json_schema' structured output mode.
         # The base class does not natively handle the 'json_schema' parameter. This block
@@ -149,7 +149,7 @@ class OpenAILargeLanguageModel(OAICompatLargeLanguageModel):
                 )
                 if existing_system_prompt:
                     existing_system_prompt.content = (
-                        structured_output_prompt + "\n\n" + existing_system_prompt.content
+                            structured_output_prompt + "\n\n" + existing_system_prompt.content
                     )
                 else:
                     prompt_messages.insert(0, SystemPromptMessage(content=structured_output_prompt))
@@ -157,6 +157,7 @@ class OpenAILargeLanguageModel(OAICompatLargeLanguageModel):
         enable_thinking = model_parameters.pop("enable_thinking", None)
         if enable_thinking is not None:
             model_parameters["chat_template_kwargs"] = {"enable_thinking": bool(enable_thinking)}
+            model_parameters["chat_template_kwargs"] = {"thinking": bool(enable_thinking)}
 
         # Remove thinking content from assistant messages for better performance.
         with suppress(Exception):
